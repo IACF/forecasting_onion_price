@@ -46,7 +46,7 @@ train_x = np.reshape(train_x, (train_x.shape[0], 1, train_x.shape[1]))
 test_x = np.reshape(test_x, (test_x.shape[0], 1, test_x.shape[1]))
 
 model = Sequential()
-model.add(LSTM(25, input_shape=(1, 2)))
+model.add(LSTM(25, input_shape=(1, dataset.shape[1])))
 model.add(Dropout(0.1))
 model.add(Dense(1))
 model.compile(loss='mse', optimizer='adam')
@@ -66,8 +66,3 @@ trainScore = math.sqrt(mean_squared_error(train_y, trainPredict))
 print('Train Score: %.2f RMSE' % (trainScore))
 testScore = math.sqrt(mean_squared_error(test_y, testPredict))
 print('Test Score: %.2f RMSE' % (testScore))
-
-# shift train predictions for plotting
-trainPredictPlot = np.empty_like(dataset)
-trainPredictPlot[:, :] = np.nan
-trainPredictPlot[look_back:len(trainPredict)+look_back, :] = trainPredict
