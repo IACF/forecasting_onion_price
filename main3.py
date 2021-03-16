@@ -12,11 +12,23 @@ from sklearn.metrics import mean_squared_error
 from keras.layers.core import Dense, Activation, Dropout
 import time  # helper libraries
 
+from dataset_window import Dataset
+
 
 def convertCash(cash):
-    cash = cash.replace('.', '')
-    cash = cash.replace(',', '.')
-    return float(cash)
+	cash = cash.replace('.', '')
+	cash = cash.replace(',', '.')
+	return float(cash)
+
+
+def create_dataset(dataset, look_back=1):
+	dataX, dataY = [], []
+	for i in range(len(dataset)-look_back-1):
+		a = dataset[i:(i+look_back), :]
+		dataX.append(a)
+		dataY.append(dataset[i + look_back, :])
+
+	return np.array(dataX), np.array(dataY)
 
 
 #Carregando os dados
@@ -25,6 +37,10 @@ data.set_index('Mês', inplace=True)
 
 data['Preço'] = data['Preço'].apply(convertCash)
 data['PREÇO_DOLAR'] = data['PREÇO_DOLAR'].apply(convertCash)
+
+dataset = Dataset(data,4)
+# x, y = create_dataset(data.values, 4)
+x, y = dataset.windowed_dataset()
 
 price_series = data['Preço']
 data = data.drop('Preço', axis=1)
