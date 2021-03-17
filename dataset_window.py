@@ -14,7 +14,7 @@ class Dataset:
 		for i in range(len(data)-look_back-1):
 			a = data[i:(i+look_back), :]
 			dataX.append(a)
-			dataY.append(data[i + look_back, :])
+			dataY.append(data[i + look_back, 0])
 		return np.array(dataX), np.array(dataY)
 
 	def windowed_dataset(self):
