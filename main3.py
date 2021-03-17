@@ -20,16 +20,7 @@ def convertCash(cash):
 	cash = cash.replace(',', '.')
 	return float(cash)
 
-
-def create_dataset(dataset, look_back=1):
-	dataX, dataY = [], []
-	for i in range(len(dataset)-look_back-1):
-		a = dataset[i:(i+look_back), :]
-		dataX.append(a)
-		dataY.append(dataset[i + look_back, :])
-
 	return np.array(dataX), np.array(dataY)
-
 
 #Carregando os dados
 data = pd.read_csv("onion_price2.csv", parse_dates=['Mês'])
@@ -38,30 +29,20 @@ data.set_index('Mês', inplace=True)
 data['Preço'] = data['Preço'].apply(convertCash)
 data['PREÇO_DOLAR'] = data['PREÇO_DOLAR'].apply(convertCash)
 
-dataset = Dataset(data,4)
-# x, y = create_dataset(data.values, 4)
+scaler_price = MinMaxScaler(feature_range=(0,1))
+scaler_dollar = MinMaxScaler(feature_range=(0,1))
+data['Preço'] = scaler_price.fit_transform(data['Preço'].to_numpy().reshape(-1, 1))
+data['PREÇO_DOLAR'] = scaler_dollar.fit_transform(data['PREÇO_DOLAR'].to_numpy().reshape(-1, 1))
+
+dataset = Dataset(data, 4)
 x, y = dataset.windowed_dataset()
 
-price_series = data['Preço']
-data = data.drop('Preço', axis=1)
+train_x, test_x = x[0:32, :], x[32:, :]
 
-scaler_price = MinMaxScaler(feature_range=(0,1))
-price_norm_dataset = scaler_price.fit_transform(price_series.to_numpy().reshape(-1, 1))
-
-
-scaler = MinMaxScaler()
-
-dataset = scaler.fit_transform(data)
-
-train_x, test_x = dataset[0:36, :], dataset[36:, :]
-
-train_y, test_y = price_norm_dataset[0:36, :], price_norm_dataset[36:, :]
-
-train_x = np.reshape(train_x, (train_x.shape[0], 1, train_x.shape[1]))
-test_x = np.reshape(test_x, (test_x.shape[0], 1, test_x.shape[1]))
+train_y, test_y = y[0:32], y[32:]
 
 model = Sequential()
-model.add(LSTM(25, input_shape=(1, 1)))
+model.add(LSTM(25, input_shape=(4, 2)))
 model.add(Dropout(0.1))
 model.add(Dense(1))
 model.compile(loss='mse', optimizer='adam')
@@ -71,13 +52,13 @@ trainPredict = model.predict(train_x)
 testPredict = model.predict(test_x)
 
 trainPredict = scaler_price.inverse_transform(trainPredict)
-train_y = scaler_price.inverse_transform(train_y)
+train_y = scaler_price.inverse_transform([train_y])
 
 testPredict = scaler_price.inverse_transform(testPredict)
-test_y = scaler_price.inverse_transform(test_y)
+test_y = scaler_price.inverse_transform([test_y])
 
 # calculate root mean squared error
-trainScore = math.sqrt(mean_squared_error(train_y, trainPredict))
+trainScore = math.sqrt(mean_squared_error(train_y[0], trainPredict))
 print('Train Score: %.2f RMSE' % (trainScore))
-testScore = math.sqrt(mean_squared_error(test_y, testPredict))
+testScore = math.sqrt(mean_squared_error(test_y[0], testPredict))
 print('Test Score: %.2f RMSE' % (testScore))
