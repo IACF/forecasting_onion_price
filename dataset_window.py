@@ -11,7 +11,7 @@ class Dataset:
 	def make_window(self, data, look_back):
 		data = data.values
 		dataX, dataY = [], []
-		for i in range(len(data)-look_back-1):
+		for i in range(len(data)-look_back):
 			a = data[i:(i+look_back), :]
 			dataX.append(a)
 			dataY.append(data[i + look_back, 0])
