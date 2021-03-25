@@ -29,14 +29,12 @@
 
 <script>
 import PlanetChart from '../components/PlanetChart'
-import PriceCard from '../components/PriceCard'
 import planetChartData from './planet-data'
 
 export default {
 	name: 'PageIndex',
 	components: {
 		PlanetChart,
-		PriceCard
 	},
 	data() {
 		return {
