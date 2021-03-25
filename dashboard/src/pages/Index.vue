@@ -5,16 +5,22 @@
 			<p class="q-ma-none">Tenha informações do preço de cebola do ano de 2019</p>
 		</div>
 		<div>
-			<q-form class="row q-gutter-md">
-				<q-select
-					class="width-select"
-					dark
-					outlined
-					v-model="form.month"
-					:options="options"
-					label="Mês"
-				/>
-				<q-btn color="primary" outline icon="fas fa-chart-bar" label="Prever" no-caps/>
+			<q-form class="row justify-between">
+				<div class="row q-gutter-md">
+
+					<q-select
+						class="width-select"
+						dark
+						outlined
+						v-model="form.month"
+						:options="options"
+						label="Mês"
+					/>
+					<q-btn color="primary" outline icon="fas fa-chart-bar" label="Prever" no-caps/>
+					<q-btn color="primary" outline icon="fas fa-file-invoice-dollar" :label="predict_price" no-caps/>
+				</div>
+				<div>
+				</div>
 			</q-form>
 		</div>
 		<planet-chart class="q-mt-xl"/>
@@ -23,12 +29,14 @@
 
 <script>
 import PlanetChart from '../components/PlanetChart'
+import PriceCard from '../components/PriceCard'
 import planetChartData from './planet-data'
 
 export default {
 	name: 'PageIndex',
 	components: {
-		PlanetChart
+		PlanetChart,
+		PriceCard
 	},
 	data() {
 		return {
@@ -85,7 +93,8 @@ export default {
 			form: {
 				month: null,
 			},
-			planetChartData
+			planetChartData,
+			predict_price: "51,50"
 		}
 	},
 	mounted() {
