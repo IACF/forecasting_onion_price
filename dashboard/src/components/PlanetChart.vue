@@ -1,6 +1,6 @@
 <template>
   <div>
-    <canvas id="planet-chart" class="bg"></canvas>
+    <canvas id="planet-chart" ref="planet"></canvas>
   </div>
 </template>
 
@@ -8,8 +8,14 @@
 import Chart from 'chart.js'
 
 export default {
-  name: 'PlanetChart'
+  name: 'PlanetChart',
+  mounted() {
+    // this.$refs.planet.parentNode.style.height = '500px';
+    this.$refs.planet.parentNode.style.width = '900px';
+  }
 }
+
+
 </script>
 
 <style lang="scss">
